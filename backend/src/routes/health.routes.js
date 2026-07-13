@@ -1,7 +1,15 @@
-{
-    "success":true,
-    "message":"POS Software API is running",
-    "version":"1.0.0",
-    "environment":"development",
-    "timestamp":"2026-07-15T12:34:56Z"
-}
+import { Router } from "express";
+
+const router = Router();
+
+router.get("/", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "CafeFlow POS API is running",
+        version: "1.0.0",
+        environment: process.env.NODE_ENV,
+        timestamp: new Date()
+    });
+});
+
+export default router;
