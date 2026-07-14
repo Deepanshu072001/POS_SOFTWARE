@@ -19,6 +19,24 @@ class AuthController {
       next(error);
     }
   }
+
+  async login(req, res, next) {
+    try {
+      const result = await authService.login(req.body, {
+        ipAddress: req.ip,
+        userAgent: req.get("User-Agent"),
+      });
+
+      return ApiResponse.success(
+        res,
+        "Login successful.",
+        result,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AuthController();

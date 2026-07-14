@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth/auth.routes.js";
 
 import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
+import testRoutes from "./routes/test.routes.js";
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.get("/", (req, res) => {
 // API Routes
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/health`, healthRoutes);
+app.use("/api/v1/test", testRoutes);
 
 // Error Handlers
 app.use(notFound);

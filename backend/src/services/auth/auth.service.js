@@ -1,24 +1,35 @@
 import userRepository from "../../repositories/auth/user.repository.js";
 import roleRepository from "../../repositories/auth/role.repository.js";
+import refreshTokenRepository from "../../repositories/auth/refreshToken.repository.js";
 
 import { AuditLog } from "../../models/index.js";
 
 import generateBusinessId from "../../helpers/generateBusinessId.js";
 
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../../utils/jwt.js";
+
 import ROLES from "../../constants/roles.js";
+import STATUS from "../../constants/status.js";
 
 import AppError from "../../utils/AppError.js";
 
 class AuthService {
+  /*
+  |--------------------------------------------------------------------------
+  | Register
+  |--------------------------------------------------------------------------
+  */
+
   async register(userData, requestInfo = {}) {
-    // Check if email already exists
     const existingUser = await userRepository.exists(userData.email);
 
     if (existingUser) {
       throw new AppError("Email already exists.", 409);
     }
 
-    // Find default role
     const role = await roleRepository.findByName(ROLES.CASHIER);
 
     if (!role) {
@@ -28,10 +39,8 @@ class AuthService {
       );
     }
 
-    // Generate Business ID
     const userId = await generateBusinessId("USER", "USR");
 
-    // Create User
     const user = await userRepository.create({
       userId,
       firstName: userData.firstName,
@@ -42,7 +51,6 @@ class AuthService {
       role: role._id,
     });
 
-    // Create Audit Log
     await AuditLog.create({
       user: user._id,
       module: "AUTH",
@@ -52,8 +60,89 @@ class AuthService {
       userAgent: requestInfo.userAgent || "",
     });
 
-    // Return created user
     return await userRepository.findById(user._id);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Login
+  |--------------------------------------------------------------------------
+  */
+
+  async login(credentials, requestInfo = {}) {
+    const { email, password } = credentials;
+
+    const user = await userRepository.findByEmail(email);
+
+    if (!user) {
+      throw new AppError("Invalid email or password.", 401);
+    }
+
+    const passwordMatched = await user.comparePassword(password);
+
+    if (!passwordMatched) {
+      throw new AppError("Invalid email or password.", 401);
+    }
+
+    if (user.status !== STATUS.ACTIVE) {
+      throw new AppError(
+        "Your account is inactive. Please contact the administrator.",
+        403
+      );
+    }
+
+    if (user.isDeleted) {
+      throw new AppError("Account not found.", 404);
+    }
+
+    if (user.isLocked) {
+      throw new AppError(
+        "Your account is temporarily locked.",
+        423
+      );
+    }
+
+    const payload = {
+      id: user._id,
+      userId: user.userId,
+      email: user.email,
+      role: user.role.name,
+    };
+
+    const accessToken = generateAccessToken(payload);
+
+    const refreshToken = generateRefreshToken(payload);
+
+    await refreshTokenRepository.create({
+      user: user._id,
+      token: refreshToken,
+      expiresAt: new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      ),
+      deviceInfo: requestInfo.userAgent || "",
+      ipAddress: requestInfo.ipAddress || "",
+    });
+
+    await userRepository.update(user._id, {
+      lastLogin: new Date(),
+      loginAttempts: 0,
+      lockUntil: null,
+    });
+
+    await AuditLog.create({
+      user: user._id,
+      module: "AUTH",
+      action: "LOGIN",
+      description: `User ${user.userId} logged in successfully.`,
+      ipAddress: requestInfo.ipAddress || "",
+      userAgent: requestInfo.userAgent || "",
+    });
+
+    return {
+      user: await userRepository.findById(user._id),
+      accessToken,
+      refreshToken,
+    };
   }
 }
 
