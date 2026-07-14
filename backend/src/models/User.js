@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
-      unique: true,
       required: true,
+      unique: true,
       trim: true,
     },
 
@@ -31,29 +31,31 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-         match: [
+      match: [
         /^\S+@\S+\.\S+$/,
-        "Please provide a valid email"
-    ]
+        "Please provide a valid email address",
+      ],
     },
 
     phone: {
       type: String,
       required: true,
       trim: true,
-      match: [/^[6-9]\d{9}$/, "Invalid phone number"]
+      match: [/^[6-9]\d{9}$/, "Invalid phone number"],
     },
 
     password: {
       type: String,
       required: true,
       minlength: 8,
+      maxlength: 128,
+      trim: true,
       select: false,
     },
 
     avatar: {
       type: String,
-      default: "",
+      default: null,
     },
 
     role: {
@@ -75,6 +77,7 @@ const userSchema = new mongoose.Schema(
 
     lastLogin: {
       type: Date,
+      default: null,
     },
 
     loginAttempts: {
@@ -84,48 +87,96 @@ const userSchema = new mongoose.Schema(
 
     lockUntil: {
       type: Date,
+      default: null,
     },
-     isDeleted: {
+
+    isDeleted: {
       type: Boolean,
       default: false,
     },
   },
-
   {
     timestamps: true,
     versionKey: false,
-  }  
+  }
 );
 
-// Indexes
-userSchema.index({ userId: 1 }, { unique: true });
-userSchema.index({ email: 1 }, { unique: true });
+/*
+|--------------------------------------------------------------------------
+| Indexes
+|--------------------------------------------------------------------------
+*/
+
 userSchema.index({ phone: 1 });
+
 userSchema.index({ status: 1 });
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.index({ isDeleted: 1 });
+
+userSchema.index({ role: 1, status: 1 });
+
+/*
+|--------------------------------------------------------------------------
+| Password Hashing
+|--------------------------------------------------------------------------
+*/
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
 
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
-
-  next();
 });
 
-// Compare password
+/*
+|--------------------------------------------------------------------------
+| Instance Methods
+|--------------------------------------------------------------------------
+*/
+
 userSchema.methods.comparePassword = async function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-// Virtual full name
+/*
+|--------------------------------------------------------------------------
+| Virtual Fields
+|--------------------------------------------------------------------------
+*/
+
 userSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
-// Include virtuals in JSON
+userSchema.virtual("isLocked").get(function () {
+  return !!(
+    this.lockUntil &&
+    this.lockUntil.getTime() > Date.now()
+  );
+});
+
+/*
+|--------------------------------------------------------------------------
+| JSON / Object Transform
+|--------------------------------------------------------------------------
+*/
+
+const transform = (doc, ret) => {
+  delete ret.password;
+
+  return ret;
+};
+
 userSchema.set("toJSON", {
   virtuals: true,
+  transform,
+});
+
+userSchema.set("toObject", {
+  virtuals: true,
+  transform,
 });
 
 const User = mongoose.model("User", userSchema);

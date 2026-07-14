@@ -1,57 +1,67 @@
 import { User } from "../../models/index.js";
 
 class UserRepository {
+  async create(userData) {
+    return User.create(userData);
+  }
 
-    async create(userData) {
-        return await User.create(userData);
-    }
+  async findByEmail(email) {
+    return User.findOne({
+      email,
+      isDeleted: false,
+    })
+      .select("+password")
+      .populate({
+        path: "role",
+        select: "name permissions",
+      });
+  }
 
-    async findByEmail(email) {
-        return await User.findOne({
-            email
-        }).select("+password").populate("role");
-    }
+  async findById(id) {
+    return User.findOne({
+      _id: id,
+      isDeleted: false,
+    }).populate({
+      path: "role",
+      select: "name permissions",
+    });
+  }
 
-    async findById(id) {
-        return await User.findById(id)
-            .populate("role");
-    }
+  async findByUserId(userId) {
+    return User.findOne({
+      userId,
+      isDeleted: false,
+    }).populate({
+      path: "role",
+      select: "name permissions",
+    });
+  }
 
-    async findByUserId(userId) {
-        return await User.findOne({
-            userId
-        }).populate("role");
-    }
+  async update(id, data) {
+    return User.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
+  }
 
-    async update(id, data) {
-        return await User.findByIdAndUpdate(
-            id,
-            data,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
-    }
+  async softDelete(id) {
+    return User.findByIdAndUpdate(
+      id,
+      {
+        isDeleted: true,
+      },
+      {
+        new: true,
+      }
+    );
+  }
 
-    async delete(id) {
-        return await User.findByIdAndUpdate(
-            id,
-            {
-                isDeleted: true
-            },
-            {
-                new: true
-            }
-        );
-    }
-
-    async exists(email) {
-        return await User.exists({
-            email
-        });
-    }
-
+  async exists(email) {
+    return User.exists({
+      email,
+      isDeleted: false,
+    });
+  }
 }
 
 export default new UserRepository();

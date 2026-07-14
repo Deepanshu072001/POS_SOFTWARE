@@ -13,16 +13,20 @@ const roleSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      default: "",
       trim: true,
+      maxlength: 255,
+      default: "",
     },
 
-    permissions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Permission",
-      },
-    ],
+    permissions: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Permission",
+        },
+      ],
+      default: [],
+    },
 
     status: {
       type: String,
@@ -34,6 +38,11 @@ const roleSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -41,16 +50,35 @@ const roleSchema = new mongoose.Schema(
   }
 );
 
-// Indexes
-roleSchema.index({ name: 1 }, { unique: true });
+/*
+|--------------------------------------------------------------------------
+| Indexes
+|--------------------------------------------------------------------------
+*/
+
+
 roleSchema.index({ status: 1 });
 
-// Prevent deleting system roles
-roleSchema.pre("deleteOne", { document: true, query: false }, function (next) {
-  if (this.isSystem) {
-    return next(new Error("System roles cannot be deleted."));
-  }
-  next();
+roleSchema.index({ isDeleted: 1 });
+
+roleSchema.index({ status: 1, isDeleted: 1 });
+
+/*
+|--------------------------------------------------------------------------
+| JSON Transform
+|--------------------------------------------------------------------------
+*/
+
+const transform = (doc, ret) => ret;
+
+roleSchema.set("toJSON", {
+  virtuals: true,
+  transform,
+});
+
+roleSchema.set("toObject", {
+  virtuals: true,
+  transform,
 });
 
 const Role = mongoose.model("Role", roleSchema);

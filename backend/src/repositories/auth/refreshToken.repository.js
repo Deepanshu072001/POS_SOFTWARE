@@ -1,31 +1,37 @@
 import { RefreshToken } from "../../models/index.js";
 
 class RefreshTokenRepository {
+  async create(data) {
+    return RefreshToken.create(data);
+  }
 
-    async create(data) {
+  async find(token) {
+    return RefreshToken.findOne({
+      token,
+      isRevoked: false,
+    }).populate("user");
+  }
 
-        return await RefreshToken.create(data);
+  async revoke(token) {
+    return RefreshToken.findOneAndUpdate(
+      { token },
+      {
+        isRevoked: true,
+        revokedAt: new Date(),
+      },
+      {
+        new: true,
+      }
+    );
+  }
 
-    }
-
-    async find(token) {
-
-        return await RefreshToken.findOne({
-            token,
-            isRevoked:false
-        });
-
-    }
-
-    async revoke(token){
-
-        return await RefreshToken.findOneAndUpdate(
-            {token},
-            {isRevoked:true},
-            {new:true}
-        );
-
-    }
-
+  async deleteExpired() {
+    return RefreshToken.deleteMany({
+      expiresAt: {
+        $lt: new Date(),
+      },
+    });
+  }
 }
+
 export default new RefreshTokenRepository();

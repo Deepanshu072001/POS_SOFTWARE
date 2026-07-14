@@ -6,8 +6,8 @@ const counterSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim: true,
       uppercase: true,
+      trim: true,
     },
 
     prefix: {
@@ -20,11 +20,14 @@ const counterSchema = new mongoose.Schema(
     sequence: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     padding: {
       type: Number,
       default: 6,
+      min: 1,
+      max: 12,
     },
   },
   {
@@ -33,7 +36,30 @@ const counterSchema = new mongoose.Schema(
   }
 );
 
-counterSchema.index({ name: 1 }, { unique: true });
+/*
+|--------------------------------------------------------------------------
+| Indexes
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| JSON Transform
+|--------------------------------------------------------------------------
+*/
+
+const transform = (doc, ret) => ret;
+
+counterSchema.set("toJSON", {
+  virtuals: true,
+  transform,
+});
+
+counterSchema.set("toObject", {
+  virtuals: true,
+  transform,
+});
 
 const Counter = mongoose.model("Counter", counterSchema);
 

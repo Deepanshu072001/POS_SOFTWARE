@@ -6,13 +6,15 @@ const generateBusinessId = async (name, prefix) => {
     {
       $inc: { sequence: 1 },
       $setOnInsert: {
+        name,
         prefix,
         padding: 6,
       },
     },
     {
-      upsert: true,
-      new: true,
+        returnDocument: "after",
+        upsert: true,
+        setDefaultsOnInsert: true,
     }
   );
 
