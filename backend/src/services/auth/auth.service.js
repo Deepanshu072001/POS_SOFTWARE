@@ -9,6 +9,7 @@ import generateBusinessId from "../../helpers/generateBusinessId.js";
 import {
   generateAccessToken,
   generateRefreshToken,
+  verifyRefreshToken,
 } from "../../utils/jwt.js";
 
 import ROLES from "../../constants/roles.js";
@@ -142,6 +143,99 @@ class AuthService {
       user: await userRepository.findById(user._id),
       accessToken,
       refreshToken,
+    };
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Current User
+  |--------------------------------------------------------------------------
+  */
+
+  async me(userId) {
+    const user = await userRepository.findById(userId);
+
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    if (user.isDeleted) {
+      throw new AppError("User account has been deleted.", 404);
+    }
+
+    if (user.status !== STATUS.ACTIVE) {
+      throw new AppError("User account is inactive.", 403);
+    }
+
+    return user;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Refresh Access Token
+  |--------------------------------------------------------------------------
+  */
+
+  async refreshToken(refreshToken) {
+    const storedToken = await refreshTokenRepository.find(refreshToken);
+
+    if (!storedToken) {
+      throw new AppError("Invalid refresh token.", 401);
+    }
+
+    if (storedToken.expiresAt < new Date()) {
+      throw new AppError("Refresh token has expired.", 401);
+    }
+
+    let decoded;
+
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch (error) {
+      throw new AppError("Invalid refresh token.", 401);
+    }
+
+    const user = await userRepository.findById(decoded.id);
+
+    if (!user) {
+      throw new AppError("User not found.", 404);
+    }
+
+    if (user.isDeleted) {
+      throw new AppError("User account has been deleted.", 404);
+    }
+
+    if (user.status !== STATUS.ACTIVE) {
+      throw new AppError("User account is inactive.", 403);
+    }
+
+    if (user.isLocked) {
+      throw new AppError(
+        "Your account is temporarily locked.",
+        423
+      );
+    }
+
+    const payload = {
+      id: user._id,
+      userId: user.userId,
+      email: user.email,
+      role: user.role.name,
+    };
+
+    const accessToken = generateAccessToken(payload);
+
+    await AuditLog.create({
+      user: user._id,
+      module: "AUTH",
+      action: "TOKEN_REFRESH",
+      description: `Access token refreshed for ${user.userId}.`,
+      ipAddress: "",
+      userAgent: "",
+    });
+
+    return {
+      accessToken,
     };
   }
 }

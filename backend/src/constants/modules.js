@@ -1,0 +1,12 @@
+const MODULES = {
+  AUTH: "AUTH",
+  USER: "USER",
+  MENU: "MENU",
+  ORDER: "ORDER",
+  INVENTORY: "INVENTORY",
+  CUSTOMER: "CUSTOMER",
+  REPORT: "REPORT",
+  DASHBOARD: "DASHBOARD",
+};
+
+export default MODULES;

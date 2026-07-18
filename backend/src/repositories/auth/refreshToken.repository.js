@@ -19,24 +19,24 @@ class RefreshTokenRepository {
         isRevoked: true,
         revokedAt: new Date(),
       },
-     {
-        returnDocument: "after"
-    }
+      {
+        returnDocument: "after",
+      }
     );
   }
 
   async revokeAll(userId) {
-  return RefreshToken.updateMany(
-    {
-      user: userId,
-      isRevoked: false,
-    },
-    {
-      isRevoked: true,
-      revokedAt: new Date(),
-    }
-  );
-}
+    return RefreshToken.updateMany(
+      {
+        user: userId,
+        isRevoked: false,
+      },
+      {
+        isRevoked: true,
+        revokedAt: new Date(),
+      }
+    );
+  }
 
   async deleteExpired() {
     return RefreshToken.deleteMany({
