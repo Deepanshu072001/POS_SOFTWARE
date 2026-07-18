@@ -1,7 +1,7 @@
 import authService from "../../services/auth/auth.service.js";
 import { ApiResponse } from "../../utils/apiResponse.js";
 
-import serializeAuth from "../../serializers/auth.serializer.js";
+import serializeAuth from "../../serializers/auth.serializers.js";
 import serializeUser from "../../serializers/user.serializer.js";
 
 class AuthController {
@@ -70,6 +70,26 @@ class AuthController {
       next(error);
     }
   }
+
+  async logout(req, res, next) {
+  try {
+    await authService.logout(
+      req.body.refreshToken,
+      {
+        ipAddress: req.ip,
+        userAgent: req.get("User-Agent"),
+      }
+    );
+
+    return ApiResponse.success(
+      res,
+      "Logged out successfully."
+    );
+  } catch (error) {
+    next(error);
+  }
+}
+
 }
 
 export default new AuthController();

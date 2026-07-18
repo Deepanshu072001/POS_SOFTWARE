@@ -2,7 +2,7 @@ import userRepository from "../../repositories/auth/user.repository.js";
 import roleRepository from "../../repositories/auth/role.repository.js";
 import refreshTokenRepository from "../../repositories/auth/refreshToken.repository.js";
 
-import { AuditLog } from "../../models/index.js";
+import auditService from "../audit/audit.service.js";
 
 import generateBusinessId from "../../helpers/generateBusinessId.js";
 
@@ -14,6 +14,8 @@ import {
 
 import ROLES from "../../constants/roles.js";
 import STATUS from "../../constants/status.js";
+import MODULES from "../../constants/modules.js";
+import AUDIT_ACTIONS from "../../constants/auditActions.js";
 
 import AppError from "../../utils/AppError.js";
 
@@ -52,14 +54,14 @@ class AuthService {
       role: role._id,
     });
 
-    await AuditLog.create({
-      user: user._id,
-      module: "AUTH",
-      action: "REGISTER",
-      description: `User ${user.userId} registered successfully.`,
-      ipAddress: requestInfo.ipAddress || "",
-      userAgent: requestInfo.userAgent || "",
-    });
+    await auditService.log({
+    user: user._id,
+    module: MODULES.AUTH,
+    action: AUDIT_ACTIONS.REGISTER,
+    description: `User ${user.userId} registered successfully.`,
+    ipAddress: requestInfo.ipAddress || "",
+    userAgent: requestInfo.userAgent || "",
+});
 
     return await userRepository.findById(user._id);
   }
@@ -130,14 +132,14 @@ class AuthService {
       lockUntil: null,
     });
 
-    await AuditLog.create({
-      user: user._id,
-      module: "AUTH",
-      action: "LOGIN",
-      description: `User ${user.userId} logged in successfully.`,
-      ipAddress: requestInfo.ipAddress || "",
-      userAgent: requestInfo.userAgent || "",
-    });
+    await auditService.log({
+    user: user._id,
+    module: MODULES.AUTH,
+    action: AUDIT_ACTIONS.LOGIN,
+    description: `User ${user.userId} logged in successfully.`,
+    ipAddress: requestInfo.ipAddress || "",
+    userAgent: requestInfo.userAgent || "",
+});
 
     return {
       user: await userRepository.findById(user._id),
@@ -225,19 +227,55 @@ class AuthService {
 
     const accessToken = generateAccessToken(payload);
 
-    await AuditLog.create({
-      user: user._id,
-      module: "AUTH",
-      action: "TOKEN_REFRESH",
-      description: `Access token refreshed for ${user.userId}.`,
-      ipAddress: "",
-      userAgent: "",
-    });
+    await auditService.log({
+  user: user._id,
+  module: MODULES.AUTH,
+  action: AUDIT_ACTIONS.REFRESH_TOKEN,
+  description: `Access token refreshed for ${user.userId}.`,
+  ipAddress: "",
+  userAgent: "",
+});
 
     return {
       accessToken,
     };
   }
+
+  /*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+*/
+
+async logout(refreshToken, requestInfo = {}) {
+  const storedToken =
+    await refreshTokenRepository.findActiveToken(
+      refreshToken
+    );
+
+  if (!storedToken) {
+    throw new AppError(
+      "Invalid refresh token.",
+      401
+    );
+  }
+
+  await refreshTokenRepository.revoke(
+    refreshToken
+  );
+
+  await auditService.log({
+    user: storedToken.user._id,
+    module: MODULES.AUTH,
+    action: AUDIT_ACTIONS.LOGOUT,
+    description: `User ${storedToken.user.userId} logged out successfully.`,
+    ipAddress: requestInfo.ipAddress || "",
+    userAgent: requestInfo.userAgent || "",
+  });
+
+  return true;
+}
+
 }
 
 export default new AuthService();

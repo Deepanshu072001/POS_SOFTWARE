@@ -45,6 +45,14 @@ class RefreshTokenRepository {
       },
     });
   }
+
+  async findActiveToken(token) {
+  return RefreshToken.findOne({
+    token,
+    isRevoked: false,
+  }).populate("user");
+}
+
 }
 
 export default new RefreshTokenRepository();

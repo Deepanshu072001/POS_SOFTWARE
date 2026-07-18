@@ -8,6 +8,7 @@ import { refreshTokenValidator } from "../../validators/auth/refresh.validator.j
 
 import validationMiddleware from "../../middleware/validation.middleware.js";
 import authMiddleware from "../../middleware/auth.middleware.js";
+import { logoutValidator } from "../../validators/auth/logout.validator.js";
 
 const router = Router();
 
@@ -42,6 +43,13 @@ router.post(
   refreshTokenValidator,
   validationMiddleware,
   authController.refreshToken
+);
+
+router.post(
+  "/logout",
+  logoutValidator,
+  validationMiddleware,
+  authController.logout
 );
 
 export default router;

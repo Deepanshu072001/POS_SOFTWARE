@@ -13,7 +13,11 @@ class UserRepository {
       .select("+password")
       .populate({
         path: "role",
-        select: "name permissions",
+        select: "name description permissions",
+        populate: {
+          path: "permissions",
+          select: "name module action",
+        },
       });
   }
 
@@ -23,7 +27,11 @@ class UserRepository {
       isDeleted: false,
     }).populate({
       path: "role",
-      select: "name permissions",
+      select: "name description permissions",
+      populate: {
+        path: "permissions",
+        select: "name module action",
+      },
     });
   }
 
@@ -33,13 +41,17 @@ class UserRepository {
       isDeleted: false,
     }).populate({
       path: "role",
-      select: "name permissions",
+      select: "name description permissions",
+      populate: {
+        path: "permissions",
+        select: "name module action",
+      },
     });
   }
 
   async update(id, data) {
     return User.findByIdAndUpdate(id, data, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
   }
@@ -51,7 +63,7 @@ class UserRepository {
         isDeleted: true,
       },
       {
-        new: true,
+        returnDocument: "after",
       }
     );
   }
