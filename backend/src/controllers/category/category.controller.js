@@ -1,13 +1,11 @@
-import branchService from "../../services/branch/branch.service.js";
-
-import serializeBranch from "../../serializers/branch.serializer.js";
-
+import categoryService from "../../services/category/category.service.js";
+import serializeCategory from "../../serializers/category/category.serializer.js";
 import { ApiResponse } from "../../utils/apiResponse.js";
 
-class BranchController {
+class CategoryController {
   async create(req, res, next) {
     try {
-      const branch = await branchService.create(
+      const category = await categoryService.create(
         req.body,
         req.user,
         {
@@ -18,8 +16,8 @@ class BranchController {
 
       return ApiResponse.success(
         res,
-        "Branch created successfully.",
-        serializeBranch(branch),
+        "Category created successfully.",
+        serializeCategory(category),
         201
       );
     } catch (error) {
@@ -29,16 +27,16 @@ class BranchController {
 
   async findAll(req, res, next) {
     try {
-      const result = await branchService.findAll(req.query);
+      const result = await categoryService.findAll(req.query);
 
       return ApiResponse.success(
         res,
-        "Branches fetched successfully.",
-       {
-        branches: result.data.map(serializeBranch),
-        pagination: result.pagination,
-      }
-    );
+        "Categories fetched successfully.",
+        {
+          categories: result.data.map(serializeCategory),
+          pagination: result.pagination,
+        }
+      );
     } catch (error) {
       next(error);
     }
@@ -46,14 +44,12 @@ class BranchController {
 
   async findById(req, res, next) {
     try {
-      const branch = await branchService.findById(
-        req.params.id
-      );
+      const category = await categoryService.findById(req.params.id);
 
       return ApiResponse.success(
         res,
-        "Branch fetched successfully.",
-        serializeBranch(branch)
+        "Category fetched successfully.",
+        serializeCategory(category)
       );
     } catch (error) {
       next(error);
@@ -62,7 +58,7 @@ class BranchController {
 
   async update(req, res, next) {
     try {
-      const branch = await branchService.update(
+      const category = await categoryService.update(
         req.params.id,
         req.body,
         req.user,
@@ -74,8 +70,8 @@ class BranchController {
 
       return ApiResponse.success(
         res,
-        "Branch updated successfully.",
-        serializeBranch(branch)
+        "Category updated successfully.",
+        serializeCategory(category)
       );
     } catch (error) {
       next(error);
@@ -84,21 +80,20 @@ class BranchController {
 
   async changeStatus(req, res, next) {
     try {
-      const branch =
-        await branchService.changeStatus(
-          req.params.id,
-          req.body.status,
-          req.user,
-          {
-            ipAddress: req.ip,
-            userAgent: req.get("User-Agent"),
-          }
-        );
+      const category = await categoryService.changeStatus(
+        req.params.id,
+        req.body.status,
+        req.user,
+        {
+          ipAddress: req.ip,
+          userAgent: req.get("User-Agent"),
+        }
+      );
 
       return ApiResponse.success(
         res,
-        "Branch status updated successfully.",
-        serializeBranch(branch)
+        "Category status updated successfully.",
+        serializeCategory(category)
       );
     } catch (error) {
       next(error);
@@ -107,7 +102,7 @@ class BranchController {
 
   async delete(req, res, next) {
     try {
-      await branchService.delete(
+      await categoryService.delete(
         req.params.id,
         req.user,
         {
@@ -118,7 +113,7 @@ class BranchController {
 
       return ApiResponse.success(
         res,
-        "Branch deleted successfully."
+        "Category deleted successfully."
       );
     } catch (error) {
       next(error);
@@ -126,4 +121,4 @@ class BranchController {
   }
 }
 
-export default new BranchController();
+export default new CategoryController();

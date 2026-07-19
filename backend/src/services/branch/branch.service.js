@@ -10,6 +10,7 @@ import AUDIT_ACTIONS from "../../constants/auditActions.js";
 import STATUS from "../../constants/status.js";
 
 import AppError from "../../utils/AppError.js";
+import { buildPaginationOptions } from "../../utils/pagination.js";
 
 class BranchService {
   /*
@@ -63,11 +64,16 @@ class BranchService {
   |--------------------------------------------------------------------------
   */
 
-  async findAll() {
-    return branchRepository.find({
+  async findAll(query) {
+  const options = buildPaginationOptions(query);
+
+  return branchRepository.paginate({
+    filter: {
       isDeleted: false,
-    });
-  }
+    },
+    ...options,
+  });
+}
 
   /*
   |--------------------------------------------------------------------------

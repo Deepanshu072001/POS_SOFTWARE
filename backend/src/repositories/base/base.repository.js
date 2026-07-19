@@ -3,21 +3,92 @@ class BaseRepository {
     this.model = model;
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Create
+  |--------------------------------------------------------------------------
+  */
+
   async create(data) {
     return this.model.create(data);
   }
 
-  async findById(id) {
-    return this.model.findById(id);
+  /*
+  |--------------------------------------------------------------------------
+  | Find By Id
+  |--------------------------------------------------------------------------
+  */
+
+  async findById(id, populate = "", select = "") {
+    return this.model
+      .findById(id)
+      .select(select)
+      .populate(populate);
   }
 
-  async findOne(filter = {}) {
-    return this.model.findOne(filter);
+  /*
+  |--------------------------------------------------------------------------
+  | Find Active By Id
+  |--------------------------------------------------------------------------
+  */
+
+  async findActiveById(id, populate = "", select = "") {
+    return this.model
+      .findOne({
+        _id: id,
+        isDeleted: false,
+      })
+      .select(select)
+      .populate(populate);
   }
 
-  async find(filter = {}, options = {}) {
-    return this.model.find(filter, null, options);
+  /*
+  |--------------------------------------------------------------------------
+  | Find One
+  |--------------------------------------------------------------------------
+  */
+
+  async findOne(filter = {}, populate = "", select = "") {
+    return this.model
+      .findOne(filter)
+      .select(select)
+      .populate(populate);
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Find
+  |--------------------------------------------------------------------------
+  */
+
+  async find(filter = {}, populate = "", select = "") {
+    return this.model
+      .find(filter)
+      .select(select)
+      .populate(populate);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Find Active
+  |--------------------------------------------------------------------------
+  */
+
+  async findActive(filter = {}, populate = "", select = "") {
+    return this.model
+      .find({
+        ...filter,
+        isDeleted: false,
+      })
+      .select(select)
+      .populate(populate);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Update
+  |--------------------------------------------------------------------------
+  */
 
   async update(id, data) {
     return this.model.findByIdAndUpdate(id, data, {
@@ -26,49 +97,92 @@ class BaseRepository {
     });
   }
 
-  async delete(id) {
-    return this.model.findByIdAndDelete(id);
+  /*
+  |--------------------------------------------------------------------------
+  | Soft Delete
+  |--------------------------------------------------------------------------
+  */
+
+  async softDelete(id, updatedBy = null) {
+    const updateData = {
+      isDeleted: true,
+    };
+
+    if (updatedBy) {
+      updateData.updatedBy = updatedBy;
+    }
+
+    return this.model.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
   }
 
-  async softDelete(id) {
-    return this.model.findByIdAndUpdate(
-      id,
-      { isDeleted: true },
-      {
-        new: true,
-      }
-    );
+  /*
+  |--------------------------------------------------------------------------
+  | Restore
+  |--------------------------------------------------------------------------
+  */
+
+  async restore(id, updatedBy = null) {
+    const updateData = {
+      isDeleted: false,
+    };
+
+    if (updatedBy) {
+      updateData.updatedBy = updatedBy;
+    }
+
+    return this.model.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
   }
 
-  async restore(id) {
-    return this.model.findByIdAndUpdate(
-      id,
-      { isDeleted: false },
-      {
-        new: true,
-      }
-    );
-  }
+  /*
+  |--------------------------------------------------------------------------
+  | Exists
+  |--------------------------------------------------------------------------
+  */
 
-  async exists(filter) {
+  async exists(filter = {}) {
     return this.model.exists(filter);
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Count
+  |--------------------------------------------------------------------------
+  */
 
   async count(filter = {}) {
     return this.model.countDocuments(filter);
   }
 
-  async paginate(
+  /*
+  |--------------------------------------------------------------------------
+  | Paginate
+  |--------------------------------------------------------------------------
+  */
+
+  async paginate({
     filter = {},
     page = 1,
     limit = 10,
-    sort = { createdAt: -1 }
-  ) {
+    sort = { createdAt: -1 },
+    populate = "",
+    select = "",
+  }) {
+    page = Number(page);
+    limit = Number(limit);
+
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
       this.model
         .find(filter)
+        .select(select)
+        .populate(populate)
         .sort(sort)
         .skip(skip)
         .limit(limit),
@@ -78,11 +192,42 @@ class BaseRepository {
 
     return {
       data,
-      total,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+        hasNext: page * limit < total,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Paginate Active
+  |--------------------------------------------------------------------------
+  */
+
+  async paginateActive({
+    filter = {},
+    page = 1,
+    limit = 10,
+    sort = { createdAt: -1 },
+    populate = "",
+    select = "",
+  }) {
+    return this.paginate({
+      filter: {
+        ...filter,
+        isDeleted: false,
+      },
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
-    };
+      sort,
+      populate,
+      select,
+    });
   }
 }
 

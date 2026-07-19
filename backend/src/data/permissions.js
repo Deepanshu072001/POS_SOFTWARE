@@ -52,6 +52,28 @@ const permissions = [
   // REPORT
   { module: "REPORT", action: "read", description: "View reports" },
 
+  // UNIT
+{
+  module: "UNIT",
+  action: "create",
+  description: "Create units",
+},
+{
+  module: "UNIT",
+  action: "read",
+  description: "View units",
+},
+{
+  module: "UNIT",
+  action: "update",
+  description: "Update units",
+},
+{
+  module: "UNIT",
+  action: "delete",
+  description: "Delete units",
+},
+
   // SETTINGS
   { module: "SETTINGS", action: "update", description: "Update settings" },
 ];
