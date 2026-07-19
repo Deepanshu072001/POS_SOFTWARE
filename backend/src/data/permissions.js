@@ -8,6 +8,12 @@ const permissions = [
   // DASHBOARD
   { module: "DASHBOARD", action: "read", description: "View dashboard" },
 
+  // BRANCH
+  { module: "BRANCH", action: "create", description: "Create branches" },
+  { module: "BRANCH", action: "read", description: "View branches" },
+  { module: "BRANCH", action: "update", description: "Update branches" },
+  { module: "BRANCH", action: "delete", description: "Delete branches" },
+
   // MENU
   { module: "MENU", action: "create", description: "Create menu items" },
   { module: "MENU", action: "read", description: "View menu items" },

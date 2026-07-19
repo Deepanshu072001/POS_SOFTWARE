@@ -16,20 +16,29 @@ const roles = [
     description: "Cafe Manager",
     isSystem: true,
     permissions: [
+      "BRANCH.READ",
+      "BRANCH.UPDATE",
+
       "DASHBOARD.READ",
+
       "MENU.CREATE",
       "MENU.READ",
       "MENU.UPDATE",
+
       "CATEGORY.CREATE",
       "CATEGORY.READ",
       "CATEGORY.UPDATE",
+
       "ORDER.READ",
       "ORDER.UPDATE",
+
       "CUSTOMER.CREATE",
       "CUSTOMER.READ",
       "CUSTOMER.UPDATE",
+
       "INVENTORY.READ",
       "INVENTORY.UPDATE",
+      
       "REPORT.READ",
     ],
   },

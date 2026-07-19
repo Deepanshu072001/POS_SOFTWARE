@@ -7,13 +7,23 @@ const authorizePermission = (...requiredPermissions) => {
         throw new AppError("Authentication required.", 401);
       }
 
+      const roleName = req.user.role?.name || "NO ROLE";
+
       const userPermissions =
         req.user.role?.permissions?.map(
           (permission) => permission.name
         ) || [];
 
-      const hasPermission = requiredPermissions.some(
-        (permission) => userPermissions.includes(permission)
+      // ===== DEBUG =====
+      console.log("==================================");
+      console.log("ROLE:", roleName);
+      console.log("USER PERMISSIONS:", userPermissions);
+      console.log("REQUIRED PERMISSIONS:", requiredPermissions);
+      console.log("==================================");
+      // =================
+
+      const hasPermission = requiredPermissions.some((permission) =>
+        userPermissions.includes(permission)
       );
 
       if (!hasPermission) {

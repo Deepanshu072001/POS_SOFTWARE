@@ -12,6 +12,8 @@ import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
 import testRoutes from "./routes/test.routes.js";
 
+import branchRoutes from "./routes/branch/branch.routes.js";
+
 const app = express();
 
 const API_PREFIX = "/api/v1";
@@ -67,6 +69,7 @@ app.get("/", (req, res) => {
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/health`, healthRoutes);
 app.use("/api/v1/test", testRoutes);
+app.use("/api/v1/branches", branchRoutes);
 
 // Error Handlers
 app.use(notFound);
