@@ -7,3 +7,4 @@ export { default as Counter } from "./Counter.js";
 export { default as Branch } from "./Branch.js";
 export { default as Category } from "./Category.js";
 export { default as Unit } from "./Unit.js";
+export { default as Tax } from "./Tax.js";

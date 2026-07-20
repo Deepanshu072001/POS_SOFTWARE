@@ -16,6 +16,8 @@ import branchRoutes from "./routes/branch/branch.routes.js";
 import categoryRoutes from "./routes/category/category.routes.js";
 
 import unitRoutes from "./routes/unit/unit.routes.js";
+import taxRoutes from "./routes/tax/tax.routes.js";
+
 
 
 const app = express();
@@ -76,7 +78,7 @@ app.use("/api/v1/test", testRoutes);
 app.use("/api/v1/branches", branchRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/units", unitRoutes);
-
+app.use("/api/v1/taxes", taxRoutes);
 
 // Error Handlers
 app.use(notFound);

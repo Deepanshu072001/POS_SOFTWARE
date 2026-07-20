@@ -74,6 +74,28 @@ const permissions = [
   description: "Delete units",
 },
 
+// TAX
+{
+  module: "TAX",
+  action: "create",
+  description: "Create taxes",
+},
+{
+  module: "TAX",
+  action: "read",
+  description: "View taxes",
+},
+{
+  module: "TAX",
+  action: "update",
+  description: "Update taxes",
+},
+{
+  module: "TAX",
+  action: "delete",
+  description: "Delete taxes",
+},
+
   // SETTINGS
   { module: "SETTINGS", action: "update", description: "Update settings" },
 ];
