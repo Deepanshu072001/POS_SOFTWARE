@@ -1,6 +1,7 @@
 import branchRepository from "../../repositories/branch/branch.repository.js";
 
 import auditService from "../audit/audit.service.js";
+import inventoryService from "../inventory/inventory.service.js";
 
 import generateBusinessId from "../../helpers/generateBusinessId.js";
 
@@ -45,6 +46,10 @@ class BranchService {
       code,
       createdBy: currentUser._id,
     });
+
+    await inventoryService.createMissingInventories(
+  currentUser
+);
 
     await auditService.log({
       user: currentUser._id,

@@ -59,6 +59,11 @@ const BUSINESS_IDS = {
     prefix: "PUR",
   },
 
+  PURCHASE_ITEM: {
+    name: "PURCHASE_ITEM",
+    PREFIX: "PIT",
+  },
+
   STOCK: {
     name: "STOCK",
     prefix: "STK",
@@ -93,6 +98,11 @@ const BUSINESS_IDS = {
     name: "COUPON",
     prefix: "CPN",
   },
+
+  STOCK_MOVEMENT: {
+    name: "STOCK_MOVEMENT",
+    prefix: "STM",
+},
 };
 
 export default BUSINESS_IDS;

@@ -1,0 +1,8 @@
+const PRODUCT_TYPES = {
+  SIMPLE: "SIMPLE",
+  VARIABLE: "VARIABLE",
+  COMBO: "COMBO",
+  RECIPE: "RECIPE",
+};
+
+export default PRODUCT_TYPES;

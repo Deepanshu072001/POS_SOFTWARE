@@ -1,0 +1,9 @@
+const VARIANT_TYPES = {
+  DEFAULT: "DEFAULT",
+  SIZE: "SIZE",
+  WEIGHT: "WEIGHT",
+  VOLUME: "VOLUME",
+  CUSTOM: "CUSTOM",
+};
+
+export default VARIANT_TYPES;

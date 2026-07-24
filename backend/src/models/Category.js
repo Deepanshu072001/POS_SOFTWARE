@@ -75,7 +75,7 @@ const categorySchema = new mongoose.Schema(
 );
 
 categorySchema.index({ name: 1 });
-categorySchema.index({ code: 1 });
+//categorySchema.index({ code: 1 });
 categorySchema.index({ status: 1 });
 categorySchema.index({ isDeleted: 1 });
 categorySchema.index({ displayOrder: 1 });

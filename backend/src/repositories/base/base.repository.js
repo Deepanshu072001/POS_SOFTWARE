@@ -28,11 +28,52 @@ class BaseRepository {
 
   /*
   |--------------------------------------------------------------------------
+  | Find By Id With Populate
+  |--------------------------------------------------------------------------
+  */
+
+  async findByIdWithPopulate(
+    id,
+    populate = [],
+    select = ""
+  ) {
+    return this.model
+      .findById(id)
+      .select(select)
+      .populate(populate);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
   | Find Active By Id
   |--------------------------------------------------------------------------
   */
 
-  async findActiveById(id, populate = "", select = "") {
+  async findActiveById(
+    id,
+    populate = "",
+    select = ""
+  ) {
+    return this.model
+      .findOne({
+        _id: id,
+        isDeleted: false,
+      })
+      .select(select)
+      .populate(populate);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Find Active By Id With Populate
+  |--------------------------------------------------------------------------
+  */
+
+  async findActiveByIdWithPopulate(
+    id,
+    populate = [],
+    select = ""
+  ) {
     return this.model
       .findOne({
         _id: id,
@@ -48,7 +89,28 @@ class BaseRepository {
   |--------------------------------------------------------------------------
   */
 
-  async findOne(filter = {}, populate = "", select = "") {
+  async findOne(
+    filter = {},
+    populate = "",
+    select = ""
+  ) {
+    return this.model
+      .findOne(filter)
+      .select(select)
+      .populate(populate);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Find One With Populate
+  |--------------------------------------------------------------------------
+  */
+
+  async findOneWithPopulate(
+    filter = {},
+    populate = [],
+    select = ""
+  ) {
     return this.model
       .findOne(filter)
       .select(select)
@@ -61,7 +123,28 @@ class BaseRepository {
   |--------------------------------------------------------------------------
   */
 
-  async find(filter = {}, populate = "", select = "") {
+  async find(
+    filter = {},
+    populate = "",
+    select = ""
+  ) {
+    return this.model
+      .find(filter)
+      .select(select)
+      .populate(populate);
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Find With Populate
+  |--------------------------------------------------------------------------
+  */
+
+  async findWithPopulate(
+    filter = {},
+    populate = [],
+    select = ""
+  ) {
     return this.model
       .find(filter)
       .select(select)
@@ -74,7 +157,11 @@ class BaseRepository {
   |--------------------------------------------------------------------------
   */
 
-  async findActive(filter = {}, populate = "", select = "") {
+  async findActive(
+    filter = {},
+    populate = "",
+    select = ""
+  ) {
     return this.model
       .find({
         ...filter,
@@ -90,11 +177,20 @@ class BaseRepository {
   |--------------------------------------------------------------------------
   */
 
-  async update(id, data) {
-    return this.model.findByIdAndUpdate(id, data, {
-      new: true,
-      runValidators: true,
-    });
+  async update(
+    id,
+    data,
+    options = {}
+  ) {
+    return this.model.findByIdAndUpdate(
+      id,
+      data,
+      {
+        new: true,
+        runValidators: true,
+        ...options,
+      }
+    );
   }
 
   /*
@@ -103,7 +199,10 @@ class BaseRepository {
   |--------------------------------------------------------------------------
   */
 
-  async softDelete(id, updatedBy = null) {
+  async softDelete(
+    id,
+    updatedBy = null
+  ) {
     const updateData = {
       isDeleted: true,
     };
@@ -112,10 +211,14 @@ class BaseRepository {
       updateData.updatedBy = updatedBy;
     }
 
-    return this.model.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    return this.model.findByIdAndUpdate(
+      id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
   }
 
   /*
@@ -124,7 +227,10 @@ class BaseRepository {
   |--------------------------------------------------------------------------
   */
 
-  async restore(id, updatedBy = null) {
+  async restore(
+    id,
+    updatedBy = null
+  ) {
     const updateData = {
       isDeleted: false,
     };
@@ -133,10 +239,14 @@ class BaseRepository {
       updateData.updatedBy = updatedBy;
     }
 
-    return this.model.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    return this.model.findByIdAndUpdate(
+      id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
   }
 
   /*

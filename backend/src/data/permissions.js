@@ -14,11 +14,27 @@ const permissions = [
   { module: "BRANCH", action: "update", description: "Update branches" },
   { module: "BRANCH", action: "delete", description: "Delete branches" },
 
-  // MENU
-  { module: "MENU", action: "create", description: "Create menu items" },
-  { module: "MENU", action: "read", description: "View menu items" },
-  { module: "MENU", action: "update", description: "Update menu items" },
-  { module: "MENU", action: "delete", description: "Delete menu items" },
+ // PRODUCT
+{
+  module: "PRODUCT",
+  action: "create",
+  description: "Create products",
+},
+{
+  module: "PRODUCT",
+  action: "read",
+  description: "View products",
+},
+{
+  module: "PRODUCT",
+  action: "update",
+  description: "Update products",
+},
+{
+  module: "PRODUCT",
+  action: "delete",
+  description: "Delete products",
+},
 
   // CATEGORY
   { module: "CATEGORY", action: "create", description: "Create categories" },
@@ -94,6 +110,65 @@ const permissions = [
   module: "TAX",
   action: "delete",
   description: "Delete taxes",
+},
+
+// SUPPLIER
+{
+  module: "SUPPLIER",
+  action: "create",
+  description: "Create suppliers",
+},
+{
+  module: "SUPPLIER",
+  action: "read",
+  description: "View suppliers",
+},
+{
+  module: "SUPPLIER",
+  action: "update",
+  description: "Update suppliers",
+},
+{
+  module: "SUPPLIER",
+  action: "delete",
+  description: "Delete suppliers",
+},
+
+// PURCHASE
+{
+  module: "PURCHASE",
+  action: "create",
+  description: "Create purchases",
+},
+{
+  module: "PURCHASE",
+  action: "view",
+  description: "View purchases",
+},
+{
+  module: "PURCHASE",
+  action: "update",
+  description: "Update purchases",
+},
+{
+  module: "PURCHASE",
+  action: "delete",
+  description: "Delete purchases",
+},
+{
+  module: "PURCHASE",
+  action: "approve",
+  description: "Approve purchases",
+},
+{
+  module: "PURCHASE",
+  action: "receive",
+  description: "Receive purchases",
+},
+{
+  module: "PURCHASE",
+  action: "cancel",
+  description: "Cancel purchases",
 },
 
   // SETTINGS

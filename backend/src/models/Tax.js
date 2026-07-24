@@ -86,7 +86,7 @@ const taxSchema = new mongoose.Schema(
 );
 
 taxSchema.index({ name: 1 });
-taxSchema.index({ code: 1 });
+// taxSchema.index({ code: 1 });
 taxSchema.index({ type: 1 });
 taxSchema.index({ status: 1 });
 taxSchema.index({ isDeleted: 1 });

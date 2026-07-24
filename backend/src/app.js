@@ -17,6 +17,13 @@ import categoryRoutes from "./routes/category/category.routes.js";
 
 import unitRoutes from "./routes/unit/unit.routes.js";
 import taxRoutes from "./routes/tax/tax.routes.js";
+import productRoutes from "./routes/product/product.routes.js";
+import variantRoutes from "./routes/product/variant.routes.js";
+import supplierRoutes from "./routes/supplier/supplier.routes.js";
+
+import purchaseRoutes from "./routes/purchase/purchase.routes.js";
+
+
 
 
 
@@ -79,6 +86,10 @@ app.use("/api/v1/branches", branchRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/units", unitRoutes);
 app.use("/api/v1/taxes", taxRoutes);
+app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/variants", variantRoutes);
+app.use("/api/v1/purchases", purchaseRoutes);
+app.use("/api/v1/suppliers", supplierRoutes);
 
 // Error Handlers
 app.use(notFound);

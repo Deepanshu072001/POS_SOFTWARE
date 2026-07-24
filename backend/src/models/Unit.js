@@ -71,7 +71,7 @@ const unitSchema = new mongoose.Schema(
 );
 
 unitSchema.index({ name: 1 });
-unitSchema.index({ code: 1 });
+// unitSchema.index({ code: 1 });
 unitSchema.index({ symbol: 1 });
 unitSchema.index({ status: 1 });
 unitSchema.index({ isDeleted: 1 });

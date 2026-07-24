@@ -21,9 +21,17 @@ const roles = [
 
       "DASHBOARD.READ",
 
-      "MENU.CREATE",
-      "MENU.READ",
-      "MENU.UPDATE",
+      "PRODUCT.CREATE",
+      "PRODUCT.READ",
+      "PRODUCT.UPDATE",
+
+      "UNIT.CREATE",
+      "UNIT.READ",
+      "UNIT.UPDATE",
+
+      "TAX.CREATE",
+      "TAX.READ",
+      "TAX.UPDATE",
 
       "CATEGORY.CREATE",
       "CATEGORY.READ",
@@ -52,7 +60,7 @@ const roles = [
       "PAYMENT.CREATE",
       "CUSTOMER.CREATE",
       "CUSTOMER.READ",
-      "MENU.READ",
+      "PRODUCT.READ",
       "CATEGORY.READ",
     ],
   },
